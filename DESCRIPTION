@@ -1,0 +1,18 @@
+Package: licencias_dsp
+Type: Package
+Title: The Title of the Project
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given   = "Sebastian",
+           family  = "Pena-Frias",
+           role    = c("aut", "cre", "cph"),
+           email   = "sebastianpena@uchile.cl",
+           comment = c(ORCID = "0000-0001-5412-2896")))
+Description: A paragraph providing a full description of the project (on 
+    several lines...)
+URL: https://github.com/sebastianpena-uchile/licencias_dsp
+BugReports: https://github.com/sebastianpena-uchile/licencias_dsp/issues
+License: GPL (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
