@@ -26,4 +26,19 @@ for (i in years) {
 
 
 
+# 3. Grabar ambiente ------------------------------------------------------
+
+
+
+save(rechazo_2013,
+     rechazo_2014,
+     rechazo_2015,
+     rechazo_2016,
+     rechazo_2017,
+     rechazo_2018,
+     rechazo_2019,
+     rechazo_2020,
+     rechazo_2021,
+     rechazo_2022,
+     rechazo_2023, file = "data/raw/rechazo_db_raw.Rdata")
 
