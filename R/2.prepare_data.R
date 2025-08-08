@@ -58,40 +58,17 @@ rechazo_2023 <- rechazo_2023 %>%
 
 
 
-
-# #2.1 Depurar 2013 -------------------------------------------------------
-#problemas filas hombres y mujeres
-
-
-
-
-
-
-
-
-
-# # # 2.1.1 Crear años ----------------------------------------------------
-
-
-
-
-year <- 2013:2023
-
-for (i in year) {
-  # Buscar objetos cuyo nombre termine con el año i
-  objs <- ls(pattern = paste0(i, "$"), envir = .GlobalEnv)
-  
-  for (obj in objs) {
-    df <- get(obj, envir = .GlobalEnv)   # Obtener el data frame
-    df <- cbind(anho = i, df)            # Añadir columna al inicio
-    assign(obj, df, envir = .GlobalEnv)  # Guardar de nuevo con el mismo nombre
-  }
-}
-
-
-
-
-
+save(rechazo_2013,
+     rechazo_2014,
+     rechazo_2015,
+     rechazo_2016,
+     rechazo_2017,
+     rechazo_2018,
+     rechazo_2019,
+     rechazo_2020,
+     rechazo_2021,
+     rechazo_2022,
+     rechazo_2023, file = "data/raw/rechazo_db_raw_ordered.Rdata")
 
 
 
