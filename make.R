@@ -28,4 +28,7 @@ devtools::load_all(here::here())
 ## Run Project ----
 
 # List all R scripts in a sequential order and using the following form:
-# source(here::here("analyses", "script_X.R"))
+source(here::here("R", "1.extraer_data.R"))
+source(here::here("R", "2.prepare_data.R"))
+source(here::here("R", "3.crear_variables.R"))
+source(here::here("R", "4.crear_db.R"))
