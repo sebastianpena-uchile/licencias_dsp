@@ -77,5 +77,5 @@ rechazo_total_2013_2023 <- bind_rows(rechazo_2013,
                                      rechazo_2014,
                                      rechazo_2015,
                                      rechazo_2016_2023)
-view(rechazo_total_2013_2023)
+View(rechazo_total_2013_2023)
 

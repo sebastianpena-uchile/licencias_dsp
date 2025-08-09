@@ -30,14 +30,14 @@ load("data/raw/rechazo_db_raw.Rdata")
 #2016 falta la fila de total
 rechazo_2013 <- rechazo_2013 %>%
   rename(
-    `Amplíese`   = Ampliese,
-    `Autorícese` = Autorizese,
-    `Rechácese`  = Rechazese,
+    `Amplíase`   = Ampliese,
+    `Autorízase` = Autorizese,
+    `Recházase"`  = Rechazese,
     `Redúcese`   = Reducese
   ) %>%
   mutate(
     `Pendiente de resolución` = NA,  # columna nueva, todo NA
-    TOTAL = `Amplíese` + `Autorícese` + `Rechácese` + `Redúcese`
+    TOTAL = `Amplíase` + `Autorícese` + `Rechácese` + `Redúcese`
   ) %>%
   select(-any_of("Total"))
 
@@ -72,4 +72,10 @@ save(rechazo_2013,
 
 
 
+# 3. Limpiar todo y guardar -----------------------------------------------
 
+
+
+
+rm(list = ls())
+gc()

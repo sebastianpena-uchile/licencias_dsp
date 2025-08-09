@@ -42,3 +42,11 @@ save(rechazo_2013,
      rechazo_2022,
      rechazo_2023, file = "data/raw/rechazo_db_raw.Rdata")
 
+
+# 4. Limpiar todo y guardar -----------------------------------------------
+
+
+
+
+rm(list = ls())
+gc()

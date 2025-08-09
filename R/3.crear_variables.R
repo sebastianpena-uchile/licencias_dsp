@@ -111,6 +111,14 @@ save(rechazo_2013,
 
 
 
+# 4. Limpiar todo y guardar -----------------------------------------------
+
+
+
+
+rm(list = ls())
+gc()
+
 
 
 
