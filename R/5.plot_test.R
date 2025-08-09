@@ -15,11 +15,30 @@ library(scales)
 
 
 
+# 2. Vargar datos ---------------------------------------------------------
 
 
-# 2. basic plot -----------------------------------------------------------
 
-#Totales
+
+load("data/clean/rechazo_db_totales.Rdata")
+
+
+
+
+
+# 3. basic plot -----------------------------------------------------------
+
+
+
+
+
+
+#Totales: proporcion rechazo sobre totales
+
+
+
+
+
 
 
 ggplot(rechazo_total_2013_2023, 
@@ -34,7 +53,17 @@ ggplot(rechazo_total_2013_2023,
 
 
 
-#desagregado por sexo
+
+
+
+
+#desagregado por sexo: proporcion rechazo sobre totales
+
+
+
+
+
+
 
 
 ggplot(rechazo_2016_2023_por_sexo, 
