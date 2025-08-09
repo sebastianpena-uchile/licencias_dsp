@@ -70,8 +70,7 @@ cei10_familia<-c("Ciertas enfermedades infecciosas y parasitarias",
   "Traumatismos, envenenamientos y algunas otras consecuencias de causa externa",
   "Otras familias de diagnósticos",
   "Otras familias de diagnósticos",
-  "Otras familias de diagnósticos",
-  "Total")
+  "Otras familias de diagnósticos")
 
 year <- 2016:2023
 

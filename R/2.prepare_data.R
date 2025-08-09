@@ -32,12 +32,12 @@ rechazo_2013 <- rechazo_2013 %>%
   rename(
     `Amplíase`   = Ampliese,
     `Autorízase` = Autorizese,
-    `Recházase"`  = Rechazese,
+    `Recházase`  = Rechazese,
     `Redúcese`   = Reducese
   ) %>%
   mutate(
     `Pendiente de resolución` = NA,  # columna nueva, todo NA
-    TOTAL = `Amplíase` + `Autorícese` + `Rechácese` + `Redúcese`
+    TOTAL = `Amplíase` + `Autorízase` + `Recházase` + `Redúcese`
   ) %>%
   select(-any_of("Total"))
 
@@ -56,6 +56,67 @@ rechazo_2023 <- rechazo_2023 %>%
   select(-`...2`)
 
 
+#eliminar filas de totales
+
+
+rechazo_2013 <- rechazo_2013 %>%
+  slice(-1)
+rechazo_2014 <- rechazo_2014 %>%
+  slice(-8)
+rechazo_2015 <- rechazo_2015 %>%
+  slice(-8)
+
+
+#eliminar fila de totales para 2016-2023
+
+year <- 2016:2023
+
+for (i in year) {
+  # Buscar objetos cuyo nombre termine con el año i
+  objs <- ls(pattern = paste0(i, "$"), envir = .GlobalEnv)
+  
+  for (obj in objs) {
+    df <- get(obj, envir = .GlobalEnv)   # Obtener el data frame
+    df <- df %>%
+      slice(-22) # aliminar fila de totales
+    assign(obj, df, envir = .GlobalEnv)  # Guardar de nuevo con el mismo nombre
+  }
+}
+
+rm(df)
+
+
+#cambiar nombre observaciones
+
+familias_filtrar <- c(
+  "Ciertas enfermedades infecciosas y parasitarias",
+  "Trastornos mentales y del comportamiento",
+  "Enfermedades del sistema respiratorio",
+  "Enfermedades del sistema digestivo",
+  "Enfermedades del sistema osteomuscular y del tejido conectivo",
+  "Traumatismos, envenenamientos y algunas otras consecuencias de causa externa",
+  "Otras familias de diagnósticos"
+)
+
+year <- 2013:2015
+
+for (i in year) {
+  # Buscar objetos cuyo nombre termine con el año i
+  objs <- ls(pattern = paste0(i, "$"), envir = .GlobalEnv)
+  
+  for (obj in objs) {
+    df <- get(obj, envir = .GlobalEnv)   # Obtener el data frame
+    df$...1<- familias_filtrar # asignar valores correctos
+    assign(obj, df, envir = .GlobalEnv)  # Guardar de nuevo con el mismo nombre
+  }
+}
+
+rm(df)
+
+
+# 3. Grabar objetos ----------------------------------------------------------
+
+
 
 
 save(rechazo_2013,
@@ -72,7 +133,7 @@ save(rechazo_2013,
 
 
 
-# 3. Limpiar todo y guardar -----------------------------------------------
+# 4. Limpiar todo y guardar -----------------------------------------------
 
 
 
