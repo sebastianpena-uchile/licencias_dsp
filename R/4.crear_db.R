@@ -141,7 +141,8 @@ rechazo_2016_2023_por_sexo <- combinar_filtrado_sexo(2016:2023, sexo)
 
 
 
-save(rechazo_2016_2023, 
+save(rechazo_2016_2023,
+     rechazo_total_2013_2023,
      rechazo_2016_2023_por_sexo,
      file = "data/clean/rechazo_db_totales.Rdata")
 
