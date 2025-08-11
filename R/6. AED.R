@@ -102,3 +102,14 @@ ggplot(tabla_rechazo, aes(x = Año)) +
     plot.subtitle = element_text(size = 12),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
+
+
+#grabar figura
+
+ggsave(
+  filename = "figures/rechazadas_vs_totales.png",
+  bg = "white",
+  width = 10,
+  height = 6,
+  dpi = 300
+)
