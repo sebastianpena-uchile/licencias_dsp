@@ -75,8 +75,6 @@ tabla_rechazo
 
 #Plot
 
-library(ggplot2)
-
 ggplot(tabla_rechazo, aes(x = Año)) +
   # Barras para Total de Licencias
   geom_col(aes(y = `Total_de_Licencias`, fill = "Total de Licencias"), alpha = 0.6) +
@@ -108,6 +106,48 @@ ggplot(tabla_rechazo, aes(x = Año)) +
 
 ggsave(
   filename = "figures/rechazadas_vs_totales.png",
+  bg = "white",
+  width = 10,
+  height = 6,
+  dpi = 300
+)
+
+
+
+#porcentaje licencias rechazadas
+
+
+ggplot(tabla_rechazo, aes(x = Año)) +
+  # Barras para Total de Licencias
+  #geom_col(aes(y = `Total_de_Licencias`, fill = "Total de Licencias"), alpha = 0.6) +
+  # Línea para Licencias Rechazadas
+  geom_line(aes(y = `porcentaje`, color = "Licencias Rechazadas"), linewidth = 1.2) +
+  geom_point(aes(y = `porcentaje`, color = "Licencias Rechazadas"), size = 2) +
+  # Títulos y leyendas
+  labs(
+    title = "Porcentaje Anual de licencias rechazas",
+    subtitle = "Trastornos mentales y del comportamiento (2013-2023)",
+    x = "Año",
+    y = "Porcentaje de Licencias",
+    fill = "Indicador",
+    color = "Indicador"
+  ) +
+  # Colores personalizados
+  scale_fill_manual(values = c("Total de Licencias" = "steelblue")) +
+  scale_color_manual(values = c("Licencias Rechazadas" = "red")) +
+  scale_x_continuous(breaks = unique(tabla_rechazo$Año)) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+#grabar figura
+
+ggsave(
+  filename = "figures/porcentajes_rechazas.png",
   bg = "white",
   width = 10,
   height = 6,
