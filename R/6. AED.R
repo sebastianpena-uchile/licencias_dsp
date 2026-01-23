@@ -20,12 +20,19 @@ if(!require(psych)){install.packages("psych")}
 if(!require(Hmisc)){install.packages("Hmisc")}
 if(!require(summarytools)){install.packages("summarytools")}
 if(!require(epitools)){install.packages("epitools")}
+if(!require(epitools)){install.packages("gt")}
+if(!require(epitools)){install.packages("webshot2")}
+
 
 ##### Cargar paquetes (OTRA ALTERNATIVA)
 try(pacman::p_load(tidyverse,   # Probablemente el paquete conjunto de paquetes más últil que usarán en R
                    foreign,         # Paquete import datos
                    Hmisc,           # Paquete con funciones variadas
-                   psych,           # Paquete con algunas funciones comúnmente utilizadas (https://personality-project.org/r/psych/intro.pdf)
+                   psych,
+                   epitools,
+                   gt,
+                   summarytools,
+                   webshot2,# Paquete con algunas funciones comúnmente utilizadas (https://personality-project.org/r/psych/intro.pdf)
                    install = F))    # solo cargar, no instalar
 
 
@@ -61,19 +68,54 @@ filtro <- rechazo_total_2013_2023$cei10_familia == "Trastornos mentales y del co
 
 # Crear la tabla depurada
 tabla_rechazo <- data.frame(
-  Año = rechazo_total_2013_2023$anho[filtro],
-  Licencias_Rechazadas = rechazo_total_2013_2023$Recházase[filtro],
-  porcentaje = (rechazo_total_2013_2023$Recházase[filtro] / rechazo_total_2013_2023$TOTAL[filtro]) * 100,
-  Total_de_Licencias = rechazo_total_2013_2023$TOTAL[filtro]
+  ahno = rechazo_total_2013_2023$anho[filtro],
+  Total_de_Licencias = rechazo_total_2013_2023$TOTAL[filtro],
+  Licencias_Rechazadas_SM = rechazo_total_2013_2023$Recházase[filtro],
+  porcentaje_del_rechazo_total = ((rechazo_total_2013_2023$Recházase[filtro] / rechazo_total_2013_2023$TOTAL[filtro]) * 100)
 )
 
 # Opcional: redondear el porcentaje a 2 decimales
-tabla_rechazo$porcentaje <- round(tabla_rechazo$porcentaje, 2)
+tabla_rechazo$porcentaje_del_rechazo_total <- round(tabla_rechazo$porcentaje, 2)
 
 # Mostrar tabla
 tabla_rechazo
 
-#Plot
+#Tabla Bonita
+
+tabla_rechazo_ahno <- tabla_rechazo %>%
+  gt() %>%
+  cols_width(
+    everything() ~ px(90)
+  ) %>%
+  tab_style(
+    style = cell_text(weight = "bold", align = "center", v_align = "middle"),
+    locations = cells_column_labels(everything())
+  ) %>%
+  tab_style(
+    style = cell_text(align = "center", v_align = "middle"),
+    locations = cells_body(everything())
+  ) %>%
+  tab_header(
+    title = "Tabla: Número y Porcentaje de Licencias Médicas Rechaadas del Total de licencias por Año",
+    subtitle = "Trastornos mentales y del comportamiento"
+  ) %>%
+  cols_label(
+    ahno = "Año",
+    Total_de_Licencias = "Total de Licencias Rechazadas",
+    Licencias_Rechazadas_SM = "N° de Licencias Médicas rechazas por Salud Mental",
+    porcentaje_del_rechazo_total = "%"
+  ) %>%
+  tab_source_note(
+    source_note = "Fuente: SUSESO, 2025"
+  )
+
+tabla_rechazo_ahno
+
+gtsave(tabla_rechazo_ahno, "tables/rechazo_SM_año.pdf")
+
+
+
+1#Plot
 
 ggplot(tabla_rechazo, aes(x = Año)) +
   # Barras para Total de Licencias
