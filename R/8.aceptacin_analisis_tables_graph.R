@@ -90,7 +90,7 @@ LM_ACEPTACION_CLEAN %>%                                 # usa el df limpio (no l
     groupname_col = "grupo"                              # crea sección (row group) con el texto de "grupo"
   ) %>%
   tab_header(                                            # 🔹 título y subtítulo de la tabla
-    title = "Tabla 1: Número de Licencias Médicas años 2015-2022",
+    title = "Tabla 1: Número de Licencias Médicas Aceptadas años 2015-2022",
     subtitle = "SUSESO, 2026"
   ) %>%
   tab_row_group(                                         # cambia SOLO el título visible de la sección
