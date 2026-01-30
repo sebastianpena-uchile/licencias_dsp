@@ -25,6 +25,11 @@ if(!require(webshot2)){install.packages("webshot2")}
 if(!require(readr)){install.packages("readr")}
 if(!require(scales)){install.packages("scales")}
 if(!require(gtExtras)){install.packages("gtExtras")}
+if(!require(tibble)){install.packages("tibble")}
+if(!require(officer)){install.packages("officer")}
+if(!require(gto)){install.packages("gto")}
+if(!require(tinytex)){install.packages("tinytex")}
+
 
 ##### Cargar paquetes (OTRA ALTERNATIVA)
 try(pacman::p_load(tidyverse,   # Probablemente el paquete conjunto de paquetes más últil que usarán en R
@@ -33,11 +38,14 @@ try(pacman::p_load(tidyverse,   # Probablemente el paquete conjunto de paquetes 
                    psych,
                    epitools,
                    gt,
-                   des,
                    webshot2,
                    readr,
                    scales,
-                   gtExtras,# Paquete con algunas funciones comúnmente utilizadas (https://personality-project.org/r/psych/intro.pdf)
+                   gtExtras,
+                   tibble,
+                   officer,
+                   gto,
+                   tinytex,# Paquete con algunas funciones comúnmente utilizadas (https://personality-project.org/r/psych/intro.pdf)
                    install = F))    # solo cargar, no instalar
 
 
@@ -61,300 +69,300 @@ LM_ACEPTACION_CLEAN <- LM_ACEPTACION %>%
 
 # 4. Tablas ---------------------------------------------------------------
 
+# ======================================================
+# 0) LIBRERÍAS
+# ======================================================
 
-# #LM aceptadas FONASA, ISAPRE y TOTAL
-# 
-# 
-# ##Bloque 1
-# 
-# tabla1_seguro <- LM_ACEPTACION_CLEAN %>%                                 # usa el df limpio (no lo modifica si no reasignas)
-#   slice(c(1, 2)) %>%                                    # toma solo las filas 1 y 2 (por posición)
-#   select(grupo = 1, stub = Seguro, `2015`:`2022`) %>%    # grupo: 1ª col (sección); stub: nombre de fila desde "Seguro"; años
-#   mutate(
-#     stub = toupper(stub),                               # 🔹 nombres de fila en MAYÚSCULAS
-#     across(`2015`:`2022`, as.numeric)                   # asegura que los años sean numéricos
-#   ) %>%
-#   mutate(                                                # 🔹 agrega fila TOTAL (y así queda formateada igual que el cuerpo)
-#     stub = as.character(stub),
-#     `2015` = as.numeric(`2015`), `2016` = as.numeric(`2016`), `2017` = as.numeric(`2017`), `2018` = as.numeric(`2018`),
-#     `2019` = as.numeric(`2019`), `2020` = as.numeric(`2020`), `2021` = as.numeric(`2021`), `2022` = as.numeric(`2022`)
-#   ) %>%
-#   bind_rows(
-#     summarise(.,
-#               grupo = first(grupo),                              # mantiene el mismo grupo
-#               stub  = "Total",                                   # nombre de la última fila
-#               across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))     # suma por columna-año
-#     )
-#   ) %>%
-#   mutate(                                                # 🔹 formatea números con . miles y , decimales (aplica a TODO, incluido Total)
-#     across(`2015`:`2022`, ~ scales::number(.x, accuracy = 1, big.mark = ".", decimal.mark = ","))
-#   ) %>%
-#   gt(
-#     rowname_col = "stub",                                # usa "stub" como nombre visible de las filas
-#     groupname_col = "grupo"                              # crea sección (row group) con el texto de "grupo"
-#   ) %>%
-#   tab_header(                                            # 🔹 título y subtítulo de la tabla
-#     title = "Tabla 1: Número de Licencias Médicas Aceptadas años 2015-2022",
-#     subtitle = "SUSESO, 2026"
-#   ) %>%
-#   tab_row_group(                                         # cambia SOLO el título visible de la sección
-#     label = "Licencias médicas aceptadas según seguro de salud",
-#     rows = TRUE
-#   ) %>%
-#   tab_style(                                             # 🔹 negrita encabezados de columnas (años)
-#     style = cell_text(weight = "bold"),
-#     locations = cells_column_labels(columns = `2015`:`2022`)
-#   ) %>%
-#   tab_style(                                             # 🔹 negrita nombres de filas (stub)
-#     style = cell_text(weight = "bold"),
-#     locations = cells_stub()
-#   ) %>%
-#   tab_style(                                             # 🔹 negrita título de la sección
-#     style = cell_text(weight = "bold"),
-#     locations = cells_row_groups()
-#   ) %>%
-#   tab_style(                                             # 🔹 negrita la última fila ("Total") completa
-#     style = cell_text(weight = "bold"),
-#     locations = cells_body(rows = stub == "Total")
-#   )
-# 
-# 
-# ##BLoque 2
-# 
-# tabla2_seguro_sexo <- LM_ACEPTACION_CLEAN %>%
-#   slice(3:8) %>%                                   # selecciona solo las filas relevantes (sexo)
-#   
-#   # selecciona columnas y renombra para gt
-#   select(grupo = Sexo,                              # grupo será Sexo (row group)
-#          stub  = Seguro,                            # stub será Seguro (filas)
-#          `2015`:`2022`) %>%                         # columnas de años
-#   
-#   mutate(
-#     grupo = as.character(grupo),                    # asegura tipo carácter
-#     grupo = dplyr::case_when(                       # normaliza nombres de Sexo
-#       grupo == "hombre"          ~ "Hombre",
-#       grupo == "mujer"           ~ "Mujer",
-#       grupo == "sin_informacion" ~ "Sin Información",
-#       TRUE ~ grupo
-#     ),
-#     stub  = toupper(as.character(stub)),            # Seguro en mayúsculas
-#     across(`2015`:`2022`, as.numeric)               # asegura valores numéricos
-#   ) %>%
-#   
-#   {                                                 # bloque auxiliar sin romper el pipe
-#     base <- .                                       # guarda la base original (detalle)
-#     
-#     sub <- base %>%                                 # calcula subtotales por Sexo
-#       group_by(grupo) %>%
-#       summarise(
-#         stub = "Subtotal",                          # nombre de la fila subtotal
-#         across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE)),
-#         .groups = "drop"
-#       )
-#     
-#     tot <- base %>%                                 # calcula total global (solo desde base)
-#       summarise(
-#         grupo = "Totales",                          # nombre del bloque final
-#         stub  = "Total",                            # nombre de la fila total
-#         across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))
-#       )
-#     
-#     bind_rows(base, sub, tot)                       # une detalle + subtotales + total
-#   } %>%
-#   
-#   mutate(
-#     orden_grupo = ifelse(                           # ordena grupos: Totales al final
-#       grupo == "Totales", 9999,
-#       as.integer(factor(grupo,
-#                         levels = unique(grupo[grupo != "Totales"])))
-#     ),
-#     orden_stub = case_when(                         # ordena filas dentro del grupo
-#       stub == "Subtotal" ~ 9998,                    # subtotal al final del grupo
-#       stub == "Total"    ~ 9999,                    # total al final absoluto
-#       TRUE ~ as.integer(
-#         factor(stub,
-#                levels = unique(stub[!stub %in% c("Subtotal","Total")]))
-#       )
-#     )
-#   ) %>%
-#   arrange(orden_grupo, grupo, orden_stub) %>%       # aplica el orden definido
-#   select(-orden_grupo, -orden_stub) %>%             # elimina columnas auxiliares
-#   
-#   mutate(
-#     across(`2015`:`2022`,                           # formatea números
-#            ~ scales::number(.x,
-#                             accuracy = 1,
-#                             big.mark = ".",
-#                             decimal.mark = ","))
-#   ) %>%
-#   
-#   gt(
-#     rowname_col  = "stub",                           # stub como nombre de filas
-#     groupname_col = "grupo"                          # grupo como bloques (Sexo)
-#   ) %>%
-#   
-#   cols_label(                                       # elimina encabezados visibles (X)
-#     `2015` = "", `2016` = "", `2017` = "", `2018` = "",
-#     `2019` = "", `2020` = "", `2021` = "", `2022` = ""
-#   ) %>%
-#   
-#   tab_style(                                        # negrita en nombres de filas
-#     style = cell_text(weight = "bold"),
-#     locations = cells_stub()
-#   ) %>%
-#   tab_style(                                        # negrita en títulos de grupo (Sexo)
-#     style = cell_text(weight = "bold"),
-#     locations = cells_row_groups()
-#   ) %>%
-#   tab_style(                                        # negrita en Subtotal y Total
-#     style = cell_text(weight = "bold"),
-#     locations = cells_body(rows = stub %in% c("Subtotal", "Total"))
-#   )
-# 
-# #Union de las tablas
-# 
-# gt_merge_stack(
-#   tabla1_seguro,
-#   tabla2_seguro_sexo
-# )
-
-
-# ------------------------------------------------------
-# Títulos internos
-# ------------------------------------------------------
-titulo_bloque1 <- "Licencias médicas autorizadas según seguro de salud"
-titulo_bloque2 <- "Licencias médicas autorizadas según sexo y seguro de salud"
+library(dplyr)   # Carga dplyr para manipulación de datos (pipes, mutate, summarise, etc.)
+library(tibble)  # Carga tibble para crear tibbles fácilmente
+library(gt)      # Carga gt para construir tablas formateadas
 
 # ======================================================
-# BLOQUE 1 – FONASA / ISAPRE / TOTAL  (arriba)
+# 1) TÍTULOS INTERNOS (ROW GROUPS “CABECERA” DE CADA BLOQUE)
 # ======================================================
-bloque1 <- LM_ACEPTACION_CLEAN %>%
-  slice(1:2) %>%
-  select(stub = Seguro, `2015`:`2022`) %>%
+
+titulo_bloque1 <- "Licencias médicas autorizadas según seguro de salud"                     # Título del bloque 1
+titulo_bloque2 <- "Licencias médicas autorizadas según sexo y seguro de salud"              # Título del bloque 2
+titulo_bloque3 <- "Licencias médicas autorizadas según rango de edad y seguro de salud"     # Título del bloque 3
+titulo_bloque4 <- "Licencias médicas autorizadas según region y seguro de salud (ambos sexos)" # Título del bloque 4
+
+# ======================================================
+# 2) ETIQUETAS “TOTALES” ÚNICAS (EVITA QUE gt FUSIONE GRUPOS)
+#    (VISUALMENTE SE VE IGUAL, INTERNAMENTE NO)
+# ======================================================
+
+totales_b2 <- "Totales"                      # Texto para totales del bloque 2
+totales_b3 <- paste0("Totales", "\u200B")    # Texto para totales del bloque 3 (mismo look, distinto internamente)
+totales_b4 <- paste0("Totales", "\u200B", "\u200B") # Texto para totales del bloque 4 (mismo look, distinto internamente)
+
+# ======================================================
+# 3) BLOQUE 1 (FILAS 1:2) + TOTAL DEL BLOQUE 1
+# ======================================================
+
+bloque1 <- LM_ACEPTACION_CLEAN %>%                                       # Parte desde tu tabla base
+  slice(1:2) %>%                                                         # Toma SOLO filas 1 y 2
+  select(stub = Seguro, `2015`:`2022`) %>%                               # Renombra Seguro->stub y toma años 2015–2022
   mutate(
-    grupo = titulo_bloque1,
-    stub  = toupper(as.character(stub)),
-    across(`2015`:`2022`, as.numeric)
+    bloque_id = 1,                                                       # Identificador del bloque (para ordenar luego)
+    grupo     = titulo_bloque1,                                          # Row group (título interno del bloque 1)
+    grupo_tipo  = 1,                                                     # Tipo de grupo: 0=título, 1=normal, 2=totales
+    grupo_orden = 1,                                                     # Orden del grupo dentro del bloque
+    stub      = toupper(as.character(stub)),                             # Pasa stub a mayúsculas (FONASA/ISAPRE)
+    across(`2015`:`2022`, as.numeric)                                    # Convierte años a numérico
   ) %>%
-  bind_rows(
-    summarise(.,
-              grupo = first(grupo),
-              stub  = "Total",
-              across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))
+  bind_rows(                                                             # Agrega una fila extra al final
+    summarise(.,                                                         # Resume el bloque para crear el total
+              bloque_id   = first(bloque_id),                                    # Mantiene el id del bloque
+              grupo       = first(grupo),                                        # Mantiene el row group del bloque 1
+              grupo_tipo  = 2,                                                   # Marca esta fila como “totales”
+              grupo_orden = 9999,                                                # Hace que el total quede al final
+              stub        = "Total",                                             # Etiqueta de la fila total
+              across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))                     # Suma por año ignorando NA
     )
   )
 
 # ======================================================
-# BLOQUE 2 – SEXO → SEGURO + SUBTOTALES + TOTAL GLOBAL (abajo)
+# 4) BLOQUE 2 (FILAS 3:8) SEXO -> SEGURO + SUBTOTALES + TOTAL GLOBAL
 # ======================================================
-bloque2_detalle <- LM_ACEPTACION_CLEAN %>%
-  slice(3:8) %>%
-  select(grupo = Sexo, stub = Seguro, `2015`:`2022`) %>%
+
+bloque2_detalle <- LM_ACEPTACION_CLEAN %>%                               # Parte desde la tabla base
+  slice(3:8) %>%                                                         # Toma SOLO filas 3 a 8
+  select(grupo = Sexo, stub = Seguro, `2015`:`2022`) %>%                 # grupo=Sexo, stub=Seguro, y años
   mutate(
-    grupo = as.character(grupo),
-    grupo = case_when(
-      grupo == "hombre"          ~ "Hombre",
-      grupo == "mujer"           ~ "Mujer",
-      grupo == "sin_informacion" ~ "Sin Información",
-      TRUE ~ grupo
+    bloque_id = 2,                                                       # Identificador bloque 2
+    grupo = case_when(                                                   # Normaliza etiquetas de Sexo
+      as.character(grupo) == "hombre"          ~ "Hombre",
+      as.character(grupo) == "mujer"           ~ "Mujer",
+      as.character(grupo) == "sin_informacion" ~ "Sin Información",
+      TRUE ~ as.character(grupo)
     ),
-    stub = toupper(as.character(stub)),
-    across(`2015`:`2022`, as.numeric)
+    grupo_tipo  = 1,                                                     # Grupo normal (no título, no totales)
+    grupo_orden = 1,                                                     # Orden base del grupo (luego ordena por texto)
+    stub = toupper(as.character(stub)),                                  # Seguro en mayúsculas
+    across(`2015`:`2022`, as.numeric)                                    # Años numéricos
   )
 
-bloque2_subtotales <- bloque2_detalle %>%
-  group_by(grupo) %>%
+bloque2_subtotales <- bloque2_detalle %>%                                # Usa el detalle del bloque 2
+  group_by(bloque_id, grupo) %>%                                         # Agrupa por bloque 2 y por sexo
   summarise(
-    stub = "Subtotal",
-    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE)),
-    .groups = "drop"
+    grupo_tipo  = 1,                                                     # Sigue siendo grupo normal
+    grupo_orden = 1,                                                     # Orden normal
+    stub = "Subtotal",                                                   # Etiqueta de subtotal
+    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE)),                      # Suma por año dentro de cada sexo
+    .groups = "drop"                                                     # Quita agrupación
   )
 
-bloque2_totales <- bloque2_detalle %>%
+# Total global SOLO UNA VEZ para todo el bloque 2
+bloque2_total_global <- bloque2_detalle %>%                              # Usa el detalle del bloque 2
   summarise(
-    grupo = "Totales",
-    stub  = "Total",
-    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))
+    bloque_id   = 2,                                                     # Bloque 2
+    grupo       = totales_b2,                                            # Grupo “Totales” (único)
+    grupo_tipo  = 2,                                                     # Marca como totales
+    grupo_orden = 9999,                                                  # Orden al final del bloque
+    stub        = "Total",                                               # Etiqueta fila total
+    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))                       # Suma global del bloque 2
   )
 
-# ------------------------------------------------------
-# FILA “ANCLA” para que exista el TÍTULO INTERIOR del BLOQUE 2
-# (gt exige al menos 1 fila para un row group)
-# ------------------------------------------------------
-fila_titulo_bloque2 <- tibble(
-  grupo = titulo_bloque2,
-  stub  = "\u200B",               # carácter invisible (no deja texto)
+fila_titulo_bloque2 <- tibble(                                           # Crea fila ancla para mostrar el título interno
+  bloque_id   = 2,                                                       # Bloque 2
+  grupo       = titulo_bloque2,                                          # Grupo = título interno del bloque 2
+  grupo_tipo  = 0,                                                       # Tipo 0 = título
+  grupo_orden = 0,                                                       # Orden primero dentro del bloque
+  stub        = "\u200B",                                                # Texto invisible (para no “ensuciar”)
   `2015` = NA_real_, `2016` = NA_real_, `2017` = NA_real_, `2018` = NA_real_,
   `2019` = NA_real_, `2020` = NA_real_, `2021` = NA_real_, `2022` = NA_real_
 )
 
 # ======================================================
-# UNIÓN FINAL + ORDEN (no cambia la lógica)
+# 5) BLOQUE 3 (FILAS 9:24) EDAD -> (ROW_GROUP POR SEGURO) + SUBTOTALES + TOTAL GLOBAL
+#    - AQUÍ SÍ QUEDA SUBDIVIDIDO POR SEGURO PORQUE grupo = Seguro (NO factor)
 # ======================================================
-tabla_final <- bind_rows(
-  bloque1,
-  fila_titulo_bloque2,   # <- aquí aparece el título interior del bloque 2
-  bloque2_detalle,
-  bloque2_subtotales,
-  bloque2_totales
-) %>%
+
+bloque3_detalle <- LM_ACEPTACION_CLEAN %>%                               # Parte desde la tabla base
+  slice(9:24) %>%                                                        # Toma SOLO filas 9 a 24 (como indicaste)
+  select(grupo = Seguro, stub = Edad, `2015`:`2022`) %>%                 # grupo=Seguro (row_group), stub=Edad
   mutate(
-    grupo = factor(
-      as.character(grupo),
-      levels = c(
-        titulo_bloque1,
-        titulo_bloque2,
-        "Hombre", "Mujer", "Sin Información",
-        "Totales"
-      )
-    ),
-    orden_stub = case_when(
-      stub == "Subtotal" ~ 9998,
-      stub == "Total"    ~ 9999,
-      TRUE ~ 1
-    )
-  ) %>%
-  arrange(grupo, orden_stub, stub) %>%
-  select(-orden_stub)
+    bloque_id = 3,                                                       # Identificador bloque 3
+    grupo = toupper(as.character(grupo)),                                # Seguro en mayúsculas => row_group por Seguro
+    grupo_tipo  = 1,                                                     # Grupo normal
+    grupo_orden = 1,                                                     # Orden normal
+    stub  = as.character(stub),                                          # Edad como texto (rangos)
+    across(`2015`:`2022`, as.numeric)                                    # Años numéricos
+  )
+
+bloque3_subtotales <- bloque3_detalle %>%                                # Usa el detalle del bloque 3
+  group_by(bloque_id, grupo) %>%                                         # Agrupa por bloque 3 y por Seguro
+  summarise(
+    grupo_tipo  = 1,                                                     # Grupo normal
+    grupo_orden = 1,                                                     # Orden normal
+    stub = "Subtotal",                                                   # Etiqueta subtotal
+    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE)),                      # Suma por año dentro de cada Seguro
+    .groups = "drop"                                                     # Quita agrupación
+  )
+
+# Total global SOLO UNA VEZ para todo el bloque 3
+bloque3_total_global <- bloque3_detalle %>%                              # Usa el detalle del bloque 3
+  summarise(
+    bloque_id   = 3,                                                     # Bloque 3
+    grupo       = totales_b3,                                            # Grupo “Totales” único del bloque 3
+    grupo_tipo  = 2,                                                     # Tipo totales
+    grupo_orden = 9999,                                                  # Orden al final del bloque
+    stub        = "Total",                                               # Etiqueta fila total
+    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))                       # Suma global bloque 3
+  )
+
+fila_titulo_bloque3 <- tibble(                                           # Fila ancla para mostrar título del bloque 3
+  bloque_id   = 3,                                                       # Bloque 3
+  grupo       = titulo_bloque3,                                          # Grupo = título interno bloque 3
+  grupo_tipo  = 0,                                                       # Tipo 0 = título
+  grupo_orden = 0,                                                       # Primero dentro del bloque
+  stub        = "\u200B",                                                # Texto invisible
+  `2015` = NA_real_, `2016` = NA_real_, `2017` = NA_real_, `2018` = NA_real_,
+  `2019` = NA_real_, `2020` = NA_real_, `2021` = NA_real_, `2022` = NA_real_
+)
 
 # ======================================================
-# SALIDA GT (una sola vez) — re-agrego título/subtítulo
+# 6) BLOQUE 4 (FILAS 25:58) REGION -> (ROW_GROUP POR SEGURO) + SUBTOTALES + TOTAL GLOBAL
+#    - MISMA LÓGICA QUE BLOQUE 3, PERO stub = Region
 # ======================================================
-tabla_final %>%
-  gt(rowname_col = "stub", groupname_col = "grupo") %>%
-  tab_header(
-    title = "Número de Licencias Médicas Aceptadas 2015–2022",
-    subtitle = "SUSESO, 2026"
+
+bloque4_detalle <- LM_ACEPTACION_CLEAN %>%                               # Parte desde la tabla base
+  slice(25:58) %>%                                                       # Toma SOLO filas 25 a 58 (como indicaste)
+  select(grupo = Seguro, stub = Region, `2015`:`2022`) %>%               # grupo=Seguro (row_group), stub=Region
+  mutate(
+    bloque_id = 4,                                                       # Identificador bloque 4
+    grupo = paste0(toupper(as.character(grupo)), "\u200B"),              # Seguro en mayúsculas => row_group por Seguro (separado del bloque 3)
+    grupo_tipo  = 1,                                                     # Grupo normal
+    grupo_orden = 1,                                                     # Orden normal
+    stub  = as.character(stub),                                          # Región como texto
+    across(`2015`:`2022`, as.numeric)                                    # Años numéricos
   ) %>%
-  sub_missing(columns = `2015`:`2022`, missing_text = "") %>%
-  fmt_number(columns = `2015`:`2022`, decimals = 0, sep_mark = ".", dec_mark = ",") %>%
-  
-  # --- hace la fila “ancla” lo más invisible posible (sin tocar nada más) ---
-  tab_style(
+  group_by(grupo) %>%                                                    # Agrupa por Seguro (dentro del bloque 4)
+  mutate(stub_orden = row_number()) %>%                                  # Guarda el orden original de Region para cada Seguro
+  ungroup()                                                              # Quita el agrupamiento
+
+bloque4_subtotales <- bloque4_detalle %>%                                # Usa el detalle del bloque 4
+  group_by(bloque_id, grupo) %>%                                         # Agrupa por bloque 4 y por Seguro
+  summarise(
+    grupo_tipo  = 1,                                                     # Grupo normal
+    grupo_orden = 1,                                                     # Orden normal
+    stub = "Subtotal",                                                   # Etiqueta subtotal
+    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE)),                      # Suma por año dentro de cada Seguro
+    .groups = "drop"                                                     # Quita agrupación
+  )
+
+# Total global SOLO UNA VEZ para todo el bloque 4
+bloque4_total_global <- bloque4_detalle %>%                              # Usa el detalle del bloque 4
+  summarise(
+    bloque_id   = 4,                                                     # Bloque 4
+    grupo       = totales_b4,                                            # Grupo “Totales” único del bloque 4
+    grupo_tipo  = 2,                                                     # Tipo totales
+    grupo_orden = 9999,                                                  # Orden al final del bloque
+    stub        = "Total",                                               # Etiqueta fila total
+    across(`2015`:`2022`, ~ sum(.x, na.rm = TRUE))                       # Suma global bloque 4
+  )
+
+fila_titulo_bloque4 <- tibble(                                           # Fila ancla para mostrar título del bloque 4
+  bloque_id   = 4,                                                       # Bloque 4
+  grupo       = titulo_bloque4,                                          # Grupo = título interno bloque 4
+  grupo_tipo  = 0,                                                       # Tipo 0 = título
+  grupo_orden = 0,                                                       # Primero dentro del bloque
+  stub        = "\u200B",                                                # Texto invisible
+  `2015` = NA_real_, `2016` = NA_real_, `2017` = NA_real_, `2018` = NA_real_,
+  `2019` = NA_real_, `2020` = NA_real_, `2021` = NA_real_, `2022` = NA_real_
+)
+
+# ======================================================
+# 7) UNIÓN FINAL + ORDEN
+#    - Ordena por bloque_id (1,2,3,4)
+#    - Dentro del bloque: título (grupo_tipo=0) primero
+#    - Luego grupos normales (grupo_tipo=1) (p.ej., Seguro)
+#    - Totales (grupo_tipo=2) al final
+#    - Subtotal/Total al final dentro de cada grupo
+# ======================================================
+
+tabla_final <- bind_rows(                                                # Une todo en una sola tabla
+  bloque1,                                                               # Bloque 1 completo
+  fila_titulo_bloque2, bloque2_detalle, bloque2_subtotales, bloque2_total_global,  # Bloque 2 completo
+  fila_titulo_bloque3, bloque3_detalle, bloque3_subtotales, bloque3_total_global,  # Bloque 3 completo
+  fila_titulo_bloque4, bloque4_detalle, bloque4_subtotales, bloque4_total_global   # Bloque 4 completo
+) %>%
+  mutate(
+    orden_stub = case_when(                                              # Orden interno de filas dentro del grupo
+      stub == "Subtotal" ~ 9998,                                         # Subtotal casi al final
+      stub == "Total"    ~ 9999,                                         # Total al final
+      TRUE ~ 1                                                          # El resto arriba
+    ),
+    stub_orden2 = if_else(is.na(stub_orden), 0L, stub_orden)              # Usa el orden original de Region (solo existe en bloque 4)
+  ) %>%
+  arrange(
+    as.integer(bloque_id),                                               # Orden por bloque 1->2->3->4 (forzado)
+    grupo_tipo,                                                          # Título (0) -> normal (1) -> totales (2)
+    grupo_orden,                                                         # Orden auxiliar (0 para títulos, 9999 totales)
+    grupo,                                                               # Orden alfabético de grupos normales (seguros/sexos)
+    orden_stub,                                                          # Subtotal/Total al final
+    stub_orden2,                                                         # Mantiene orden original (bloque 4) sin afectar el resto
+    stub                                                                 # Orden alfabético del stub (edad/region/seguro)
+  ) %>%
+  select(-bloque_id, -grupo_tipo, -grupo_orden, -orden_stub, -stub_orden, -stub_orden2) # Elimina columnas auxiliares
+
+# ======================================================
+# 8) TABLA gt (FORMATO)
+# ======================================================
+
+tabla_final %>%                                                          # Usa la tabla final ordenada
+  gt(rowname_col = "stub", groupname_col = "grupo") %>%                  # stub como rowname, grupo como row_group
+  tab_header(
+    title = "Número de Licencias Médicas Autorizadas 2015–2022",         # Título principal
+    subtitle = "SUSESO, 2026"                                            # Subtítulo
+  ) %>%
+  sub_missing(columns = `2015`:`2022`, missing_text = "") %>%            # NA se imprime vacío
+  fmt_number(
+    columns = `2015`:`2022`,                                             # Formatea años
+    decimals = 0,                                                        # Sin decimales
+    sep_mark = ".",                                                      # Separador de miles
+    dec_mark = ","                                                       # Separador decimal (no afecta con decimals=0)
+  ) %>%
+  tab_style(                                                             # Estilo para “ocultar” filas ancla (títulos internos)
     style = list(
-      cell_text(color = "transparent", size = "0px"),
-      cell_borders(sides = "all", weight = px(0), color = "transparent")
+      cell_text(color = "transparent", size = "0px"),                    # Texto invisible
+      cell_borders(sides = "all", weight = px(0), color = "transparent") # Bordes invisibles
     ),
     locations = list(
-      cells_stub(rows = grupo == titulo_bloque2),
-      cells_body(rows = grupo == titulo_bloque2)
+      cells_stub(rows = grupo %in% c(titulo_bloque2, titulo_bloque3, titulo_bloque4)),   # Oculta stub de filas ancla
+      cells_body(rows = grupo %in% c(titulo_bloque2, titulo_bloque3, titulo_bloque4))    # Oculta cuerpo de filas ancla
     )
   ) %>%
-  
-  # --- estilos que ya venías usando ---
-  tab_style(
+  tab_style(                                                             # Negrita en encabezados de columnas
     style = cell_text(weight = "bold"),
     locations = cells_column_labels(columns = `2015`:`2022`)
   ) %>%
-  tab_style(
+  tab_style(                                                             # Negrita en la columna stub
     style = cell_text(weight = "bold"),
     locations = cells_stub()
   ) %>%
-  tab_style(
+  tab_style(                                                             # Negrita en títulos de row groups
     style = cell_text(weight = "bold"),
     locations = cells_row_groups()
   ) %>%
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(rows = stub %in% c("Subtotal", "Total"))
+  tab_style(                                                             # Estilo para diferenciar las filas de subtotales y totales
+    style = list(
+      cell_fill(color = "#F2F2F2"),                                      # Gris claro para subtotales
+      cell_text(weight = "bold")                                         # Texto en negrita
+    ),
+    locations = cells_body(rows = stub == "Subtotal")                    # Aplica solo a filas Subtotal
+  ) %>%
+  tab_style(                                                             # Estilo para diferenciar las filas de subtotales y totales
+    style = list(
+      cell_fill(color = "#D9D9D9"),                                      # Gris más oscuro para totales
+      cell_text(weight = "bold")                                         # Texto en negrita
+    ),
+    locations = cells_body(rows = stub == "Total")                       # Aplica solo a filas Total
   )
+
+
+#Pasar a word
+
+
+
+
