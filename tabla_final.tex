@@ -1,0 +1,313 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{longtable}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{anyfontsize}
+\usepackage{multirow}
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Número de Licencias Médicas Autorizadas 2015--2022},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Número de Licencias Médicas Autorizadas 2015--2022}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+
+
+You can add options to executable code like this
+
+\begin{table}
+\caption*{
+{\fontsize{20}{25}\selectfont  Número de Licencias Médicas Autorizadas 2015–2022\fontsize{12}{15}\selectfont } \\ 
+{\fontsize{14}{17}\selectfont  SUSESO, 2026\fontsize{12}{15}\selectfont }
+} 
+\fontsize{12.0pt}{14.0pt}\selectfont
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}l|rrrrrrrr}
+\toprule
+ & {\bfseries 2015} & {\bfseries 2016} & {\bfseries 2017} & {\bfseries 2018} & {\bfseries 2019} & {\bfseries 2020} & {\bfseries 2021} & {\bfseries 2022} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Licencias médicas autorizadas según seguro de salud}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries FONASA} & 3.159.058 & 3.348.560 & 3.664.072 & 4.005.604 & 4.311.164 & 4.310.302 & 6.368.309 & 7.049.916 \\ 
+{\bfseries ISAPRE} & 1.696.620 & 1.685.906 & 1.816.124 & 1.885.351 & 2.016.708 & 1.280.192 & 1.620.894 & 1.896.809 \\ 
+{\bfseries Total} & {\bfseries \cellcolor[HTML]{D9D9D9}{4.855.678}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.034.466}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.480.196}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.890.955}} & {\bfseries \cellcolor[HTML]{D9D9D9}{6.327.872}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.590.494}} & {\bfseries \cellcolor[HTML]{D9D9D9}{7.989.203}} & {\bfseries \cellcolor[HTML]{D9D9D9}{8.946.725}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Licencias médicas autorizadas según sexo y seguro de salud}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries \fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{​}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Hombre}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries FONASA} & 1.185.500 & 1.255.109 & 1.321.216 & 1.398.039 & 1.550.635 & 1.856.127 & 2.846.848 & 2.893.906 \\ 
+{\bfseries ISAPRE} & 801.612 & 796.298 & 866.724 & 903.365 & 969.403 & 860.492 & 841.101 & 906.507 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.987.112}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.051.407}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.187.940}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.301.404}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.520.038}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.716.619}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.687.949}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.800.413}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Mujer}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries FONASA} & 1.973.558 & 2.093.451 & 2.342.856 & 2.607.556 & 2.760.529 & 2.454.175 & 3.521.461 & 4.156.010 \\ 
+{\bfseries ISAPRE} & 895.008 & 889.608 & 942.173 & 981.986 & 1.047.305 & 742.118 & 779.750 & 990.299 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.868.566}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.983.059}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.285.029}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.589.542}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.807.834}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.196.293}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.301.211}} & {\bfseries \cellcolor[HTML]{F2F2F2}{5.146.309}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Sin Información}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries FONASA} & 0 & 0 & 0 & 9 & 0 & 0 & 0 & 0 \\ 
+{\bfseries ISAPRE} & 0 & 0 & 0 & 0 & 0 & 36 & 43 & 3 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{0}} & {\bfseries \cellcolor[HTML]{F2F2F2}{0}} & {\bfseries \cellcolor[HTML]{F2F2F2}{0}} & {\bfseries \cellcolor[HTML]{F2F2F2}{9}} & {\bfseries \cellcolor[HTML]{F2F2F2}{0}} & {\bfseries \cellcolor[HTML]{F2F2F2}{36}} & {\bfseries \cellcolor[HTML]{F2F2F2}{43}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Totales}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries Total} & {\bfseries \cellcolor[HTML]{D9D9D9}{4.855.678}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.034.466}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.472.969}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.890.955}} & {\bfseries \cellcolor[HTML]{D9D9D9}{6.327.872}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.912.948}} & {\bfseries \cellcolor[HTML]{D9D9D9}{7.989.203}} & {\bfseries \cellcolor[HTML]{D9D9D9}{8.946.725}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Licencias médicas autorizadas según rango de edad y seguro de salud}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries \fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{​}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries FONASA}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries 19 y menos} & 31.458 & 30.551 & 25.193 & 27.171 & 26.826 & 27.217 & 56.144 & 62.586 \\ 
+{\bfseries 20-24} & 289.308 & 287.632 & 282.168 & 306.097 & 324.874 & 321.239 & 509.894 & 544.965 \\ 
+{\bfseries 25-34} & 929.842 & 979.478 & 1.056.613 & 1.174.962 & 1.280.677 & 1.267.677 & 1.937.880 & 2.168.515 \\ 
+{\bfseries 35-44} & 741.272 & 780.273 & 860.879 & 935.373 & 1.002.073 & 986.607 & 1.500.893 & 1.687.156 \\ 
+{\bfseries 45-54} & 647.160 & 682.753 & 750.656 & 797.020 & 841.525 & 845.457 & 1.232.912 & 1.307.772 \\ 
+{\bfseries 55-64} & 411.101 & 459.736 & 535.409 & 595.356 & 642.889 & 658.956 & 901.229 & 1.002.386 \\ 
+{\bfseries 65 y más} & 108.917 & 128.137 & 153.154 & 169.625 & 192.300 & 203.149 & 229.357 & 276.536 \\ 
+{\bfseries Sin información} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.159.058}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.348.560}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.664.072}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.005.604}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.311.164}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.310.302}} & {\bfseries \cellcolor[HTML]{F2F2F2}{6.368.309}} & {\bfseries \cellcolor[HTML]{F2F2F2}{7.049.916}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries ISAPRE}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries 19 y menos} & 3.420 & 3.028 & 2.403 & 1.828 & 1.712 & 1.184 & 643 & 572 \\ 
+{\bfseries 20-24} & 84.049 & 74.062 & 69.400 & 62.325 & 60.123 & 44.744 & 34.699 & 27.248 \\ 
+{\bfseries 25-34} & 611.825 & 604.222 & 629.995 & 648.492 & 693.409 & 551.246 & 546.139 & 594.413 \\ 
+{\bfseries 35-44} & 476.114 & 476.344 & 520.155 & 551.208 & 597.576 & 479.394 & 508.459 & 612.295 \\ 
+{\bfseries 45-54} & 294.062 & 294.891 & 321.871 & 337.829 & 359.800 & 293.648 & 300.280 & 365.782 \\ 
+{\bfseries 55-64} & 194.672 & 197.237 & 220.028 & 234.828 & 249.520 & 192.431 & 192.701 & 243.153 \\ 
+{\bfseries 65 y más} & 32.478 & 36.122 & 45.037 & 48.823 & 54.561 & 39.990 & 37.970 & 53.344 \\ 
+{\bfseries Sin información} & 0 & 0 & 9 & 18 & 7 & 7 & 3 & 2 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.696.620}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.685.906}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.808.898}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.885.351}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.016.708}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.602.644}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.620.894}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.896.809}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Totales​}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries Total} & {\bfseries \cellcolor[HTML]{D9D9D9}{4.855.678}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.034.466}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.472.970}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.890.955}} & {\bfseries \cellcolor[HTML]{D9D9D9}{6.327.872}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.912.946}} & {\bfseries \cellcolor[HTML]{D9D9D9}{7.989.203}} & {\bfseries \cellcolor[HTML]{D9D9D9}{8.946.725}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Licencias médicas autorizadas según region y seguro de salud (ambos sexos)}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries \fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{​}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} & {\fontsize{0}{0}\selectfont \textcolor[HTML]{rgba(255,255,255,0)}{}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries FONASA​}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries Arica y Parinacota (XV)} & 30.754 & 32.122 & 31.481 & 31.234 & 28.262 & 21.733 & 36.184 & 46.810 \\ 
+{\bfseries Tarapacá (I)} & 52.601 & 51.851 & 56.098 & 64.586 & 77.285 & 65.239 & 106.122 & 127.328 \\ 
+{\bfseries Antofagasta (II)} & 101.861 & 95.285 & 96.402 & 98.814 & 118.289 & 126.247 & 203.365 & 234.236 \\ 
+{\bfseries Atacama (III)} & 56.781 & 55.565 & 53.630 & 52.812 & 65.319 & 53.081 & 84.539 & 117.835 \\ 
+{\bfseries Coquimbo (IV)} & 94.570 & 91.299 & 91.448 & 107.838 & 118.263 & 101.248 & 170.984 & 232.502 \\ 
+{\bfseries Valparaíso (V)} & 237.952 & 237.112 & 237.764 & 235.875 & 352.748 & 339.907 & 560.518 & 670.980 \\ 
+{\bfseries Metropolitana (RM)} & 1.701.853 & 1.835.225 & 2.079.224 & 2.256.692 & 2.276.027 & 2.429.438 & 3.211.895 & 3.236.527 \\ 
+{\bfseries O'Higgins (VI)} & 180.008 & 172.807 & 156.040 & 174.357 & 192.545 & 200.810 & 296.116 & 328.013 \\ 
+{\bfseries Maule (VII)} & 127.838 & 135.293 & 145.314 & 168.259 & 206.237 & 193.807 & 318.030 & 364.735 \\ 
+{\bfseries Ñuble (XVI)} & 0 & 0 & 0 & 67.178 & 74.989 & 74.752 & 130.377 & 165.641 \\ 
+{\bfseries Biobío (VIII)} & 279.168 & 335.131 & 377.626 & 341.562 & 336.679 & 331.120 & 541.184 & 669.514 \\ 
+{\bfseries La Araucanía (IX)} & 115.252 & 116.201 & 126.046 & 144.291 & 167.439 & 113.848 & 244.345 & 284.505 \\ 
+{\bfseries Los Ríos (XIV)} & 28.584 & 30.735 & 32.517 & 43.557 & 54.828 & 39.996 & 82.155 & 113.725 \\ 
+{\bfseries Los Lagos (X)} & 110.460 & 122.125 & 136.137 & 161.327 & 174.857 & 160.536 & 289.530 & 341.676 \\ 
+{\bfseries Aysén (XI)} & 12.644 & 13.821 & 16.638 & 21.414 & 23.497 & 16.032 & 31.630 & 44.510 \\ 
+{\bfseries Magallanes (XII)} & 28.732 & 23.988 & 27.707 & 35.808 & 43.900 & 42.508 & 61.335 & 71.379 \\ 
+{\bfseries Sin información} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.159.058}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.348.560}} & {\bfseries \cellcolor[HTML]{F2F2F2}{3.664.072}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.005.604}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.311.164}} & {\bfseries \cellcolor[HTML]{F2F2F2}{4.310.302}} & {\bfseries \cellcolor[HTML]{F2F2F2}{6.368.309}} & {\bfseries \cellcolor[HTML]{F2F2F2}{7.049.916}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries ISAPRE​}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries Arica y Parinacota (XV)} & 12.123 & 12.010 & 12.792 & 12.727 & 13.011 & 8.501 & 8.672 & 11.887 \\ 
+{\bfseries Tarapacá (I)} & 30.249 & 27.300 & 27.005 & 27.247 & 28.803 & 25.619 & 30.553 & 37.026 \\ 
+{\bfseries Antofagasta (II)} & 79.356 & 69.524 & 70.637 & 72.392 & 80.302 & 70.994 & 74.994 & 88.037 \\ 
+{\bfseries Atacama (III)} & 19.638 & 18.747 & 20.505 & 20.569 & 20.570 & 16.356 & 18.219 & 24.039 \\ 
+{\bfseries Coquimbo (IV)} & 20.879 & 20.240 & 21.827 & 23.290 & 24.798 & 17.561 & 19.662 & 29.451 \\ 
+{\bfseries Valparaíso (V)} & 87.668 & 93.014 & 99.352 & 103.114 & 106.001 & 84.227 & 92.514 & 118.148 \\ 
+{\bfseries Metropolitana (RM)} & 1.098.846 & 1.096.995 & 1.170.237 & 1.213.587 & 1.321.052 & 1.059.178 & 1.028.986 & 1.144.290 \\ 
+{\bfseries O'Higgins (VI)} & 51.521 & 49.972 & 51.630 & 52.290 & 54.168 & 49.559 & 49.763 & 61.211 \\ 
+{\bfseries Maule (VII)} & 39.759 & 40.942 & 44.574 & 49.258 & 53.511 & 37.782 & 45.873 & 60.593 \\ 
+{\bfseries Ñuble (XVI)} & 0 & 0 & 0 & 6.200 & 23.781 & 15.967 & 21.612 & 28.882 \\ 
+{\bfseries Biobío (VIII)} & 115.018 & 116.425 & 123.541 & 126.464 & 115.558 & 83.949 & 90.788 & 115.736 \\ 
+{\bfseries La Araucanía (IX)} & 43.728 & 44.377 & 48.448 & 52.464 & 56.544 & 35.053 & 39.672 & 56.170 \\ 
+{\bfseries Los Ríos (XIV)} & 18.001 & 18.288 & 19.879 & 21.639 & 22.061 & 13.918 & 15.222 & 22.414 \\ 
+{\bfseries Los Lagos (X)} & 57.608 & 56.159 & 59.864 & 63.850 & 66.297 & 44.975 & 57.456 & 71.182 \\ 
+{\bfseries Aysén (XI)} & 6.270 & 6.346 & 6.897 & 6.811 & 6.589 & 4.029 & 4.977 & 7.126 \\ 
+{\bfseries Magallanes (XII)} & 15.956 & 15.566 & 17.410 & 19.209 & 21.960 & 16.365 & 15.967 & 19.043 \\ 
+{\bfseries Sin información} & 0 & 0 & 14.299 & 14.241 & 1.702 & 18.613 & 5.964 & 1.574 \\ 
+{\bfseries Subtotal} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.696.620}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.685.905}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.808.897}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.885.352}} & {\bfseries \cellcolor[HTML]{F2F2F2}{2.016.708}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.602.646}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.620.894}} & {\bfseries \cellcolor[HTML]{F2F2F2}{1.896.809}} \\ 
+\midrule\addlinespace[2.5pt]
+\multicolumn{9}{l}{{\bfseries Totales​​}} \\[2.5pt] 
+\midrule\addlinespace[2.5pt]
+{\bfseries Total} & {\bfseries \cellcolor[HTML]{D9D9D9}{4.855.678}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.034.465}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.472.969}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.890.956}} & {\bfseries \cellcolor[HTML]{D9D9D9}{6.327.872}} & {\bfseries \cellcolor[HTML]{D9D9D9}{5.912.948}} & {\bfseries \cellcolor[HTML]{D9D9D9}{7.989.203}} & {\bfseries \cellcolor[HTML]{D9D9D9}{8.946.725}} \\ 
+\bottomrule
+\end{tabular*}
+\end{table}
+
+The \texttt{echo:\ false} option disables the printing of code (only
+output is displayed).
+
+
+
+
+\end{document}
