@@ -364,5 +364,274 @@ tabla_final %>%                                                          # Usa l
 #Pasar a word
 
 
+# #graficos ---------------------------------------------------------------
 
+years <- as.character(2015:2022)
 
+LM_ACEPTACION_CLEAN <- LM_ACEPTACION_CLEAN %>%
+  mutate(across(all_of(years), ~ readr::parse_number(as.character(.x))))
+
+# ======================================================
+# GRAFICOS ggplot2 (4 bloques) - basado en tu subdivisión
+# ======================================================
+
+# ======================================================
+# INSTALACION INTELIGENTE DE PAQUETES (SOLO SI FALTAN)
+# ======================================================
+
+pkgs_needed <- c(
+  "dplyr",
+  "tidyr",
+  "ggplot2",
+  "scales",
+  "stringr",
+  "forcats",
+  "ggrepel",
+  "readr"
+)
+
+pkgs_missing <- pkgs_needed[!pkgs_needed %in% installed.packages()[,"Package"]]
+
+if (length(pkgs_missing) > 0) {
+  install.packages(pkgs_missing, repos = "https://cloud.r-project.org")
+}
+
+# ======================================================
+# CARGA DE LIBRERIAS
+# ======================================================
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(stringr)
+library(forcats)
+library(ggrepel)
+library(readr)
+
+# ======================================================
+# 1) Titulos / subtitulos por bloque
+# ======================================================
+
+titulo_bloque1 <- "Licencias médicas autorizadas según seguro de salud"
+titulo_bloque2 <- "Licencias médicas autorizadas según sexo y seguro de salud"
+titulo_bloque3 <- "Licencias médicas autorizadas según rango de edad y seguro de salud"
+titulo_bloque4 <- "Licencias médicas autorizadas según region y seguro de salud (ambos sexos)"
+
+subtitulo_general <- "Serie anual 2015–2022 • Fuente: SUSESO"
+
+# ======================================================
+# 2) Estilo “presentación”
+# ======================================================
+
+theme_set(
+  theme_minimal(base_size = 12) +
+    theme(
+      plot.title.position = "plot",
+      plot.title = element_text(face = "bold", size = 16),
+      plot.subtitle = element_text(size = 12, color = "grey30"),
+      plot.caption = element_text(size = 9, color = "grey40"),
+      legend.position = "top",
+      legend.title = element_blank(),
+      panel.grid.minor = element_blank()
+    )
+)
+
+fmt_num <- label_number(big.mark = ".", decimal.mark = ",")
+years <- as.character(2015:2022)
+
+# ---- helper robusto
+to_long <- function(df, id_cols) {
+  df %>%
+    mutate(across(all_of(years), ~ readr::parse_number(as.character(.x)))) %>%
+    pivot_longer(cols = all_of(years), names_to = "anio", values_to = "n") %>%
+    mutate(
+      anio = as.integer(anio),
+      n = as.numeric(n)
+    )
+}
+
+# ======================================================
+# BLOQUE 1: Seguro
+# ======================================================
+
+b1 <- LM_ACEPTACION_CLEAN %>%
+  slice(1:2) %>%
+  select(Seguro, `2015`:`2022`) %>%
+  mutate(Seguro = str_to_upper(as.character(Seguro))) %>%
+  to_long(id_cols = "Seguro")
+
+p1 <- ggplot(b1, aes(anio, n, color = Seguro)) +
+  geom_line(linewidth = 1.1, alpha = 0.95) +
+  geom_point(size = 2, alpha = 0.9) +
+  scale_x_continuous(breaks = 2015:2022) +
+  scale_y_continuous(labels = fmt_num) +
+  labs(
+    title = titulo_bloque1,
+    subtitle = subtitulo_general,
+    x = NULL, y = "Número de licencias"
+  )
+
+# ======================================================
+# BLOQUE 2: Sexo + Seguro
+# ======================================================
+
+b2 <- LM_ACEPTACION_CLEAN %>%
+  slice(3:8) %>%
+  select(Sexo, Seguro, `2015`:`2022`) %>%
+  mutate(
+    Sexo = case_when(
+      as.character(Sexo) == "hombre"          ~ "Hombre",
+      as.character(Sexo) == "mujer"           ~ "Mujer",
+      as.character(Sexo) == "sin_informacion" ~ "Sin Información",
+      TRUE ~ as.character(Sexo)
+    ),
+    Seguro = str_to_upper(as.character(Seguro))
+  ) %>%
+  to_long(id_cols = c("Sexo", "Seguro"))
+
+p2 <- ggplot(b2, aes(anio, n, color = Seguro)) +
+  geom_line(linewidth = 1.05, alpha = 0.95) +
+  geom_point(size = 1.9, alpha = 0.9) +
+  facet_wrap(~ Sexo, ncol = 2, scales = "free_y") +
+  scale_x_continuous(breaks = 2015:2022) +
+  scale_y_continuous(labels = fmt_num) +
+  labs(
+    title = titulo_bloque2,
+    subtitle = paste0(subtitulo_general, " • Escala libre por panel"),
+    x = NULL, y = "Número de licencias"
+  )
+
+# ======================================================
+# BLOQUE 3: Edad + Seguro (porcentaje con etiquetas)
+# ======================================================
+
+b3 <- LM_ACEPTACION_CLEAN %>%
+  slice(9:24) %>%
+  select(Seguro, Edad, `2015`:`2022`) %>%
+  mutate(
+    Seguro = str_to_upper(as.character(Seguro)),
+    Edad = as.character(Edad)
+  ) %>%
+  to_long(id_cols = c("Seguro", "Edad")) %>%
+  group_by(Seguro, anio) %>%
+  mutate(p = n / sum(n, na.rm = TRUE)) %>%
+  ungroup()
+
+anios_etiqueta <- 2015:2022
+min_p_etiqueta <- 0.03
+
+b3_lab <- b3 %>%
+  filter(anio %in% anios_etiqueta, p >= min_p_etiqueta) %>%
+  group_by(Seguro, anio) %>%
+  mutate(ypos = cumsum(p) - p / 2) %>%
+  ungroup() %>%
+  mutate(lbl = scales::percent(p, accuracy = 1, decimal.mark = ","))
+
+p3 <- ggplot(b3, aes(anio, p, fill = Edad)) +
+  geom_area(alpha = 0.95, linewidth = 0.2) +
+  facet_wrap(~ Seguro, ncol = 2) +
+  scale_x_continuous(breaks = 2015:2022) +
+  scale_y_continuous(labels = label_percent(accuracy = 1, decimal.mark = ",")) +
+  labs(
+    title = titulo_bloque3,
+    subtitle = paste0(subtitulo_general, " • Participación dentro de cada seguro"),
+    x = NULL, y = "Participación (%)"
+  ) +
+  ggrepel::geom_text_repel(
+    data = b3_lab,
+    aes(anio, ypos, label = lbl),
+    inherit.aes = FALSE,
+    size = 2.8,
+    direction = "y",
+    segment.size = 0.15,
+    min.segment.length = 0,
+    box.padding = 0.15,
+    max.overlaps = 50,
+    seed = 123
+  )
+
+# ======================================================
+# BLOQUE 4: Region + Seguro (UNICO CAMBIO: ORDEN NORTE -> SUR ARRIBA -> ABAJO)
+# ======================================================
+
+b4_wide <- LM_ACEPTACION_CLEAN %>%
+  slice(25:58) %>%
+  select(Seguro, Region, `2015`:`2022`) %>%
+  mutate(
+    Seguro = str_to_upper(as.character(Seguro)),
+    Region = str_replace_all(as.character(Region), "\\s+", " ")
+  )
+
+region_levels_ns <- c(
+  "Arica y Parinacota",
+  "Tarapacá",
+  "Antofagasta",
+  "Atacama",
+  "Coquimbo",
+  "Valparaíso",
+  "Metropolitana de Santiago",
+  "O'Higgins",
+  "Maule",
+  "Ñuble",
+  "Biobío",
+  "La Araucanía",
+  "Los Ríos",
+  "Los Lagos",
+  "Aysén",
+  "Magallanes"
+)
+
+region_in_data <- unique(b4_wide$Region)
+
+region_levels_final <- c(
+  intersect(region_levels_ns, region_in_data),
+  setdiff(region_in_data, region_levels_ns)
+)
+
+b4 <- b4_wide %>%
+  to_long(id_cols = c("Seguro", "Region")) %>%
+  mutate(Region = factor(Region, levels = region_levels_final))
+
+p4 <- ggplot(b4, aes(x = anio, y = Region, fill = n)) +
+  geom_tile() +
+  facet_wrap(~ Seguro, ncol = 2, scales = "free_y") +
+  scale_x_continuous(breaks = 2015:2022) +
+  scale_y_discrete(limits = rev(levels(b4$Region))) +   # <<< CAMBIO CLAVE
+  scale_fill_gradientn(
+    colours = c("darkgreen", "gold", "red3"),
+    values = scales::rescale(c(0, 0.6, 1)),
+    labels = fmt_num,
+    guide = guide_colorbar(
+      barwidth = grid::unit(28, "lines"),
+      barheight = grid::unit(0.9, "cm"),
+      ticks = TRUE
+    )
+  ) +
+  labs(
+    title = titulo_bloque4,
+    subtitle = subtitulo_general,
+    x = NULL, y = NULL, fill = "N"
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.y = element_text(size = 9)
+  )
+
+# ======================================================
+# MOSTRAR
+# ======================================================
+
+p1
+p2
+p3
+p4
+
+# ======================================================
+# EXPORTAR (NO CAMBIAR NOMBRES)
+# ======================================================
+
+ggsave("01_bloque1_seguro.png", p1, width = 10, height = 5, dpi = 320)
+ggsave("02_bloque2_sexo_seguro.png", p2, width = 10, height = 5.5, dpi = 320)
+ggsave("03_bloque3_edad_seguro_pct.png", p3, width = 10, height = 6.2, dpi = 320)
+ggsave("04_bloque4_region_seguro_top.png", p4, width = 10, height = 7, dpi = 320)
