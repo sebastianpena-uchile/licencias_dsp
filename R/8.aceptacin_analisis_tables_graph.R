@@ -631,7 +631,7 @@ p4
 # EXPORTAR (NO CAMBIAR NOMBRES)
 # ======================================================
 
-ggsave("01_bloque1_seguro.png", p1, width = 10, height = 5, dpi = 320)
-ggsave("02_bloque2_sexo_seguro.png", p2, width = 10, height = 5.5, dpi = 320)
-ggsave("03_bloque3_edad_seguro_pct.png", p3, width = 10, height = 6.2, dpi = 320)
-ggsave("04_bloque4_region_seguro_top.png", p4, width = 10, height = 7, dpi = 320)
+ggsave("figures/01_bloque1_seguro.png", p1, width = 10, height = 5, dpi = 320)
+ggsave("figures/02_bloque2_sexo_seguro.png", p2, width = 10, height = 5.5, dpi = 320)
+ggsave("figures/03_bloque3_edad_seguro_pct.png", p3, width = 10, height = 6.2, dpi = 320)
+ggsave("figures/04_bloque4_region_seguro_top.png", p4, width = 10, height = 7, dpi = 320)
